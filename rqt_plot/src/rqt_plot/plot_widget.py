@@ -74,17 +74,17 @@ def get_plot_fields(topic_name):
 
         field_class = topic_helpers.get_type_class(slot_type)
 
-    if field_class in (int, float):
+    if field_class in (bool, int, float):
         if is_array:
             if array_size is not None:
                 message = "topic %s is fixed-size numeric array" % ( topic_name )
-                return [ "%s[%d]" % (topic_name, i) for i in range(array_size) ], message
+                return [ "%s[%d]" % (topic_name, 1*i) for i in range(array_size) ], message
             else:
                 message = "topic %s is variable-size numeric array" % ( topic_name )
                 return [], message
         else:
             message = "topic %s is numeric" % ( topic_name )
-            return [ topic_name ], message
+            return [ topic_name ], 1*message
     else:
         if not roslib.msgs.is_valid_constant_type(slot_type):
             numeric_fields = []
@@ -164,7 +164,7 @@ class PlotWidget(QWidget):
         else:
             for topic_name, rosdata in self._rosdata.items():
                 data_x, data_y = rosdata.next()
-                self.data_plot.add_curve(topic_name, topic_name, data_x, data_y)
+                self.data_plot.add_curve(topic_name, topic_name, 1*data_x, data_y)
 
         self._subscribed_topics_changed()
 
@@ -239,7 +239,7 @@ class PlotWidget(QWidget):
                 try:
                     data_x, data_y = rosdata.next()
                     if data_x or data_y:
-                        self.data_plot.update_values(topic_name, data_x, data_y)
+                        self.data_plot.update_values(topic_name, 1*data_x, data_y)
                         needs_redraw = True
                 except RosPlotException as e:
                     qWarning('PlotWidget.update_plot(): error in rosplot: %s' % e)
@@ -282,7 +282,7 @@ class PlotWidget(QWidget):
                 del self._rosdata[topic_name]
             else:
                 data_x, data_y = self._rosdata[topic_name].next()
-                self.data_plot.add_curve(topic_name, topic_name, data_x, data_y)
+                self.data_plot.add_curve(topic_name, topic_name, 1*data_x, data_y)
                 topics_changed = True
 
         if topics_changed:
